@@ -1,0 +1,10 @@
+---
+
+- name: update umask in login.defs
+  lineinfile:
+    dest: /etc/login.defs
+    regexp: "^	:umask=022:\\"
+    line: "	:umask=027:\\"
+    owner: root
+    group: root
+    mode: "0644"
