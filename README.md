@@ -1,6 +1,6 @@
 # Ansible Role: umask
 
-An Ansible Role that updates the system umask for Debian and OpenBSD.
+An Ansible Role that updates the system umask.
 
 [![Actions Status](https://github.com/tristan-weil/ansible-role-umask/workflows/molecule/badge.svg?branch=master)](https://github.com/tristan-weil/ansible-role-umask/actions)
 
