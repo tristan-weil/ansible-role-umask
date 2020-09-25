@@ -1,0 +1,69 @@
+---
+
+- hosts: all
+  name: 'Verify'
+  become: True
+  gather_facts: True
+
+  tasks:
+    - name: 'cleaning'
+      file:
+        path: "{{ item.path }}"
+        state: 'absent'
+      loop:
+        - path: '/tmp/fic1'
+        - path: '/tmp/dir1'
+
+    - name: 'create a file and a directory'
+      shell: |
+        su -s /bin/ksh molecule -c 'touch /tmp/fic1 && mkdir /tmp/dir1'
+      when: ansible_facts['os_family'] == 'OpenBSD'
+
+    - name: 'create a file and a directory'
+      shell: |
+        su -c 'touch /tmp/fic1 && mkdir /tmp/dir1' molecule
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: 'get file stat'
+      stat:
+        path: '/tmp/fic1'
+      register: __verify_file_stat
+
+    - name: 'get directory stat'
+      stat:
+        path: '/tmp/dir1'
+      register: __verify_dir_stat
+
+    - name: 'check file and directory'
+      assert:
+        that:
+          - __verify_file_stat.stat.exists
+          - __verify_file_stat.stat.isreg
+          - __verify_file_stat.stat.mode == '0640'
+          - __verify_dir_stat.stat.exists
+          - __verify_dir_stat.stat.isdir
+          - __verify_dir_stat.stat.mode == '0750'
+
+    - name: 'slurp OpenBSD login.conf stat'
+      slurp:
+        path: '/etc/login.conf'
+      when: ansible_facts['os_family'] == 'OpenBSD'
+      register: __verify_configobsd_stat
+
+    - name: 'slurp Debian login.defs stat'
+      slurp:
+        path: '/etc/login.defs'
+      when: ansible_facts['os_family'] == 'Debian'
+      register: __verify_configdebian_stat
+
+    - name: 'check OpenBSD login.conf content'
+      assert:
+        that:
+          - __verify_configobsd_stat['content'] | b64decode | regex_search(":umask=027:", multiline=True)
+      when: ansible_facts['os_family'] == 'OpenBSD'
+
+    - name: 'check Debian login.conf content'
+      assert:
+        that:
+          - __verify_configdebian_stat['content'] | b64decode | regex_search("^UMASK\s+027", multiline=True)
+      when: ansible_facts['os_family'] == 'Debian'

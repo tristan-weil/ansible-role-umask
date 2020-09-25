@@ -1,0 +1,19 @@
+---
+
+- name: 'update umask in pam'
+  lineinfile:
+    dest: '/etc/pam.d/common-session'
+    line: "session optional pam_umask.so umask={{ umask_mode }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'update umask in login.defs'
+  lineinfile:
+    dest: '/etc/login.defs'
+    regexp: "^UMASK(?P<space>\\s+)"
+    line: "UMASK\\g<space>{{ umask_mode }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backrefs: True

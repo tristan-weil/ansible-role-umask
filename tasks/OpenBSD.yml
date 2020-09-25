@@ -1,10 +1,11 @@
 ---
 
-- name: update umask in login.defs
+- name: 'update umask in login.conf'
   lineinfile:
-    dest: /etc/login.defs
-    regexp: "^	:umask=022:\\"
-    line: "	:umask=027:\\"
-    owner: root
-    group: root
-    mode: "0644"
+    dest: '/etc/login.conf'
+    regexp: "^(\\s+):umask=.*:"
+    line: "\\1:umask={{ umask_mode }}:\\\\"
+    owner: 'root'
+    group: 'wheel'
+    mode: '0644'
+    backrefs: True
