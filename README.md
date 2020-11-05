@@ -39,4 +39,4 @@ See [meta/main.yml](https://github.com/tristan-weil/ansible-role-umask/blob/mast
 
 ## License
 
-See [LICENSE.md](https://github.com/tristan-weil/ansible-role-umask/blob/master/LICENSE.md)
+See [LICENSE.md](LICENSE.md)
